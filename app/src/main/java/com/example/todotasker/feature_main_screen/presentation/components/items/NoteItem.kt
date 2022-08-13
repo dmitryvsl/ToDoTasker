@@ -29,7 +29,7 @@ fun NoteItem(
     date: String? = null,
     isComplete: Boolean,
     color: Color,
-    onItemClick: () -> Unit,
+    onItemClick: () -> Unit = {},
 ) {
     Column(modifier = modifier) {
 
@@ -87,12 +87,7 @@ private fun NoteRow(
             )
         }
 
-        Canvas(
-            modifier = Modifier
-                .size(12.dp)
-        ) {
-            drawCircle(color = color)
-        }
+        CircleItem(color = color)
     }
 
 

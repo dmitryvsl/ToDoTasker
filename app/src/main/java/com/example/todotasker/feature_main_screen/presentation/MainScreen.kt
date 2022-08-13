@@ -1,21 +1,26 @@
 package com.example.todotasker.feature_main_screen.presentation
 
-import android.util.Log
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.todotasker.feature_main_screen.domain.model.Note
-import com.example.todotasker.feature_main_screen.presentation.components.TopBar
-import com.example.todotasker.feature_main_screen.presentation.components.buttons.FAB
+import androidx.navigation.NavController
+import com.example.todotasker.Screens
+import com.example.todotasker.feature_main_screen.presentation.components.SheetContent
+import com.example.todotasker.feature_main_screen.presentation.utils.MainScreenState
+import com.example.todotasker.feature_main_screen.presentation.utils.UiEvent
+import com.example.todotasker.feature_main_screen.presentation.utils.rememberMainScreenState
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun MainScreen() {
+fun MainScreen(navController: NavController) {
     val mainScreenState = rememberMainScreenState()
 
     val viewModel: MainScreenViewModel = viewModel()
@@ -23,19 +28,68 @@ fun MainScreen() {
     val taskList = viewModel.tasks.observeAsState()
     val noteList = viewModel.notes.observeAsState()
     val colorMap = viewModel.colors.observeAsState()
+    val selectedTask = viewModel.selectedTask.observeAsState()
+
+    val uiEvent = viewModel.eventsFlow.collectAsState(initial = UiEvent.Initial)
+
+    ProcessUiEvents(
+        screenState = mainScreenState,
+        navController = navController,
+        uiEvent = uiEvent.value,
+    )
 
     ModalBottomSheetLayout(
         sheetState = mainScreenState.bottomState,
-        sheetContent = {Text("1")},
+        sheetContent = {
+            SheetContent(
+                task = selectedTask.value ?: mainScreenState.emptyTask,
+                onRemoveTaskClick = { viewModel.removeTaskClicked() }
+            )
+        },
+        sheetShape = RoundedCornerShape(topEnd = 10.dp, topStart = 10.dp),
+        sheetBackgroundColor = Color(selectedTask.value?.color ?: mainScreenState.emptyTask.color)
     ) {
         MyScaffold(
             screenState = mainScreenState,
             colorMap = colorMap.value ?: emptyMap(),
             taskList = taskList.value ?: emptyList(),
-            noteList = noteList.value ?: emptyList()
+            noteList = noteList.value ?: emptyList(),
+            onTaskClick = { task -> viewModel.taskClicked(task) },
+            onNewTaskClick = {
+                viewModel.newTaskClicked()
+                mainScreenState.revertIsFabClicked()
+                mainScreenState.revertIsOpenDialog()
+            },
+            onNewTaskDismissClick = { task ->
+                viewModel.saveNewTask(task)
+                mainScreenState.revertIsOpenDialog()
+            }
         )
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun ProcessUiEvents(
+    screenState: MainScreenState,
+    navController: NavController,
+    uiEvent: UiEvent,
+) {
+    when (uiEvent) {
+        UiEvent.Initial -> {}
+        is UiEvent.ShowTaskDescription ->
+            LaunchedEffect(uiEvent.value) {
+                screenState.bottomState.animateTo(ModalBottomSheetValue.Expanded)
+            }
 
+        is UiEvent.HideTaskDescription -> {
+            LaunchedEffect(uiEvent.value) {
+                screenState.bottomState.animateTo(ModalBottomSheetValue.Hidden)
+            }
+        }
 
+        UiEvent.ShowNewTaskAlert -> screenState.isOpenDialog.value = true
+
+        UiEvent.NavigateToNewNote -> navController.navigate(Screens.NewNote().name)
+    }
+}

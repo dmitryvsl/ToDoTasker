@@ -1,7 +1,7 @@
-package com.example.todotasker.feature_main_screen.presentation
+package com.example.todotasker.feature_main_screen.presentation.components.lists
 
-import android.util.Log
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
@@ -10,6 +10,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.todotasker.feature_main_screen.domain.model.Note
+import com.example.todotasker.feature_main_screen.presentation.components.EmptyPlaceholder
 import com.example.todotasker.feature_main_screen.presentation.components.items.NoteItem
 import com.example.todotasker.ui.theme.Blue
 import com.example.todotasker.ui.theme.Yellow
@@ -20,10 +21,14 @@ fun NoteList(
     colors: Map<Int, Int>,
     notes: List<Note>,
 ) {
-    Log.d("NoteList", "list count: ${notes.size}")
-    LazyColumn (
-        modifier = Modifier.fillMaxSize()
-            ) {
+    if (notes.isEmpty())
+        EmptyPlaceholder(text = "No Notes")
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxHeight(0.55f)
+            .fillMaxWidth()
+    ) {
         items(notes) { note ->
             NoteItem(
                 text = note.title,
