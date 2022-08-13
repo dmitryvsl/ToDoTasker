@@ -12,11 +12,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.todotasker.Screens
 import com.example.todotasker.feature_main_screen.presentation.components.SheetContent
 import com.example.todotasker.feature_main_screen.presentation.utils.MainScreenState
 import com.example.todotasker.feature_main_screen.presentation.utils.UiEvent
 import com.example.todotasker.feature_main_screen.presentation.utils.rememberMainScreenState
+import com.example.todotasker.utils.Screens
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -63,6 +63,10 @@ fun MainScreen(navController: NavController) {
             onNewTaskDismissClick = { task ->
                 viewModel.saveNewTask(task)
                 mainScreenState.revertIsOpenDialog()
+            },
+            onNewNoteClick = {
+                mainScreenState.revertIsFabClicked()
+                viewModel.newNoteClicked()
             }
         )
     }
@@ -90,6 +94,8 @@ fun ProcessUiEvents(
 
         UiEvent.ShowNewTaskAlert -> screenState.isOpenDialog.value = true
 
-        UiEvent.NavigateToNewNote -> navController.navigate(Screens.NewNote().name)
+        UiEvent.NavigateToNewNote -> navController.navigate(Screens.NewNote().name){
+            launchSingleTop = true
+        }
     }
 }

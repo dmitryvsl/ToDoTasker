@@ -27,6 +27,7 @@ fun MyScaffold(
     onTaskClick: (Task) -> Unit,
     onNewTaskClick: () -> Unit,
     onNewTaskDismissClick: (Task) -> Unit,
+    onNewNoteClick: () -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -45,8 +46,11 @@ fun MyScaffold(
                 onClick = { screenState.revertIsFabClicked() },
                 onDropDownDismiss = { screenState.revertIsFabClicked() },
                 onDropDownMenuItemClicked = { item ->
-                    if (item == DropDownMenuItem.TASK)
+                    if (item == DropDownMenuItem.NOTE)
+                        onNewNoteClick()
+                    else
                         onNewTaskClick()
+
                 }
             )
         },

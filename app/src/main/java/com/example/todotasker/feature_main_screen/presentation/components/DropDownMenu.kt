@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -20,8 +19,8 @@ import com.example.todotasker.ui.theme.Blue
 import com.example.todotasker.ui.theme.spacings
 
 enum class DropDownMenuItem {
-    TASK,
-    LIST
+    NOTE,
+    TASK
 }
 
 private data class MenuItem(
@@ -55,8 +54,8 @@ fun DropDownMenu(
             drawableId = items[0].icID,
             title = items[0].title,
             onClick = {
-                onItemClick(DropDownMenuItem.TASK)
-                Log.d("DropDownMenu", "TASK clicked")
+                onItemClick(DropDownMenuItem.NOTE)
+                Log.d("DropDownMenu", "NOTE clicked")
             }
         )
 
@@ -66,8 +65,8 @@ fun DropDownMenu(
             drawableId = items[1].icID,
             title = items[1].title,
             onClick = {
-                Log.d("DropDownMenu", "LIST clicked")
-                onItemClick(DropDownMenuItem.LIST)
+                Log.d("DropDownMenu", "TASK clicked")
+                onItemClick(DropDownMenuItem.TASK)
             }
         )
 

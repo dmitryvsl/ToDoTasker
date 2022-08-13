@@ -52,7 +52,14 @@ class MainScreenViewModel : ViewModel() {
         }
     }
 
+    fun newNoteClicked(){
+        viewModelScope.launch (dispatcher){
+            eventChannel.send(UiEvent.NavigateToNewNote)
+        }
+    }
+
     fun saveNewTask(task: Task) {
+        if (task.title.isEmpty()) return
         viewModelScope.launch(dispatcher) {
             useCases.saveTask(task)
             getTasks()
@@ -63,10 +70,11 @@ class MainScreenViewModel : ViewModel() {
         viewModelScope.launch(dispatcher) {
             eventChannel.send(UiEvent.HideTaskDescription(getRandomFloat()))
             useCases.deleteTask(_selectedTask.value!!)
+            getTasks()
         }
     }
 
-    fun getTasks() {
+    private fun getTasks() {
         viewModelScope.launch(dispatcher) {
             val result = useCases.getTasks()
             _tasks.postValue(result)
