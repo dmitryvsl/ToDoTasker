@@ -22,7 +22,6 @@ fun TopBar(
     TopAppBar(
         title = {
             Text(
-                // тк аппбар имеет стартовый отступ, равный 16dp, отнимаем это значение
                 modifier = Modifier.padding(start = MaterialTheme.spacings.large),
                 text = "Today",
                 style = TextStyle(color = Color.Black, fontWeight = FontWeight.Medium),

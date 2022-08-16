@@ -15,23 +15,19 @@ import com.example.todotasker.ui.theme.spacings
 
 @Composable
 fun TaskList(
+    modifier: Modifier = Modifier,
     taskList: List<Task>,
     onTaskClick: (Task) -> Unit,
 ) {
 
     if(taskList.isEmpty())
-        EmptyPlaceholder(text = "No Tasks")
+        EmptyPlaceholder(text = "No Lists")
 
     LazyColumn(
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth()
     ) {
         items(taskList) { task ->
             TaskItem(
-                modifier = Modifier
-                    .padding(
-                        start = MaterialTheme.spacings.extraLarge,
-                        end = MaterialTheme.spacings.medium
-                    ),
                 title = task.title,
                 noteCount = task.notes.size,
                 color = Color(task.color),

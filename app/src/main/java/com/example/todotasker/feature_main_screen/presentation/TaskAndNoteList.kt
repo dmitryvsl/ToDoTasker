@@ -1,5 +1,6 @@
 package com.example.todotasker.feature_main_screen.presentation
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -10,7 +11,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
 import com.example.todotasker.feature_main_screen.domain.model.Note
 import com.example.todotasker.feature_main_screen.domain.model.Task
-import com.example.todotasker.feature_main_screen.presentation.components.NewTaskDialog
 import com.example.todotasker.feature_main_screen.presentation.components.lists.NoteList
 import com.example.todotasker.ui.theme.Black
 import com.example.todotasker.ui.theme.spacings
@@ -21,13 +21,14 @@ fun TaskAndNoteList(
     colorMap: Map<Int, Int>,
     noteList: List<Note>,
     taskList: List<Task>,
-    onTaskClick: (Task) -> Unit
+    onTaskClick: (Task) -> Unit,
 ) {
     Column(
         modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Top
     ) {
+
         NoteList(
             colors = colorMap,
             notes = noteList
@@ -36,6 +37,10 @@ fun TaskAndNoteList(
         TaskHeader()
 
         TaskList(
+            modifier = Modifier.padding(
+                start = MaterialTheme.spacings.extraLarge,
+                end = MaterialTheme.spacings.medium
+            ),
             taskList = taskList,
             onTaskClick = { task -> onTaskClick(task) }
         )

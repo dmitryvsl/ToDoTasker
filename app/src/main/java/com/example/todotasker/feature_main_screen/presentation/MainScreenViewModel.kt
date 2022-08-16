@@ -10,6 +10,7 @@ import com.example.todotasker.feature_main_screen.domain.use_cases.MainScreenUse
 import com.example.todotasker.feature_main_screen.presentation.utils.UiEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlin.random.Random
@@ -35,10 +36,6 @@ class MainScreenViewModel : ViewModel() {
 
     private val dispatcher = Dispatchers.IO
 
-    init {
-        getTasks()
-    }
-
     fun taskClicked(task: Task) {
         viewModelScope.launch(dispatcher) {
             _selectedTask.postValue(task)
@@ -52,9 +49,16 @@ class MainScreenViewModel : ViewModel() {
         }
     }
 
-    fun newNoteClicked(){
-        viewModelScope.launch (dispatcher){
-            eventChannel.send(UiEvent.NavigateToNewNote)
+    fun newNoteClicked() {
+        viewModelScope.launch(dispatcher) {
+            if (_tasks.value?.isEmpty() == false)
+                eventChannel.send(UiEvent.NavigateToNewNote)
+            else {
+                eventChannel.send(UiEvent.ShowSnackbar("Add new List first"))
+                //Время показа Snackbar'а на экране
+                delay(4000L)
+                eventChannel.send(UiEvent.Initial)
+            }
         }
     }
 
@@ -70,7 +74,14 @@ class MainScreenViewModel : ViewModel() {
         viewModelScope.launch(dispatcher) {
             eventChannel.send(UiEvent.HideTaskDescription(getRandomFloat()))
             useCases.deleteTask(_selectedTask.value!!)
+            getData()
+        }
+    }
+
+    fun getData() {
+        viewModelScope.launch (dispatcher){
             getTasks()
+            getNotes()
         }
     }
 
@@ -78,6 +89,18 @@ class MainScreenViewModel : ViewModel() {
         viewModelScope.launch(dispatcher) {
             val result = useCases.getTasks()
             _tasks.postValue(result)
+            val colorList: MutableMap<Int,Int> = mutableMapOf()
+            result.forEachIndexed { _, task ->
+                colorList[task.id] = task.color
+            }
+            _colors.postValue(colorList)
+        }
+    }
+
+    private fun getNotes() {
+        viewModelScope.launch(dispatcher) {
+            val result = useCases.getNotes()
+            _notes.postValue(result)
         }
     }
 

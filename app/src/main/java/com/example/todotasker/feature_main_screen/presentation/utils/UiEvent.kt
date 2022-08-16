@@ -8,4 +8,5 @@ sealed  class UiEvent(){
     data class HideTaskDescription(val value: Float): UiEvent()
     object ShowNewTaskAlert: UiEvent()
     object NavigateToNewNote: UiEvent()
+    data class ShowSnackbar(val message: String): UiEvent()
 }

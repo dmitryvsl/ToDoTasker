@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.FabPosition
 import androidx.compose.material.Scaffold
+import androidx.compose.material.ScaffoldState
+import androidx.compose.material.Snackbar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.example.todotasker.feature_main_screen.domain.model.Note
@@ -21,6 +23,7 @@ const val TAG = "MyScaffold"
 @Composable
 fun MyScaffold(
     screenState: MainScreenState,
+    scaffoldState: ScaffoldState,
     colorMap: Map<Int, Int>,
     taskList: List<Task>,
     noteList: List<Note>,
@@ -30,6 +33,7 @@ fun MyScaffold(
     onNewNoteClick: () -> Unit,
 ) {
     Scaffold(
+        scaffoldState = scaffoldState,
         topBar = {
             Overlay(
                 modifier = Modifier.fillMaxWidth(),

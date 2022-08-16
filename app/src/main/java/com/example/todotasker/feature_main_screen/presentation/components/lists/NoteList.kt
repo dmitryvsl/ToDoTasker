@@ -1,5 +1,6 @@
 package com.example.todotasker.feature_main_screen.presentation.components.lists
 
+import android.util.Log
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
@@ -22,8 +23,7 @@ fun NoteList(
     notes: List<Note>,
 ) {
     if (notes.isEmpty())
-        EmptyPlaceholder(text = "No Notes")
-
+        EmptyPlaceholder(text = "No Tasks")
     LazyColumn(
         modifier = Modifier
             .fillMaxHeight(0.55f)
@@ -31,10 +31,8 @@ fun NoteList(
     ) {
         items(notes) { note ->
             NoteItem(
-                text = note.title,
-                time = note.time,
-                isComplete = note.isComplete,
-                color = Color(colors[note.taskId]!!),
+                note = note,
+                color = Color(colors[note.taskId] ?: Color.Transparent.toArgb()),
                 onItemClick = { /*TODO*/ }
             )
         }

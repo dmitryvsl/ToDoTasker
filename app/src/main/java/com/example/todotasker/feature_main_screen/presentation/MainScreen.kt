@@ -4,6 +4,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.SnackbarDuration
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -29,8 +30,11 @@ fun MainScreen(navController: NavController) {
     val noteList = viewModel.notes.observeAsState()
     val colorMap = viewModel.colors.observeAsState()
     val selectedTask = viewModel.selectedTask.observeAsState()
-
     val uiEvent = viewModel.eventsFlow.collectAsState(initial = UiEvent.Initial)
+
+    LaunchedEffect(navController.currentBackStackEntry?.id.toString()) {
+        viewModel.getData()
+    }
 
     ProcessUiEvents(
         screenState = mainScreenState,
@@ -50,6 +54,7 @@ fun MainScreen(navController: NavController) {
         sheetBackgroundColor = Color(selectedTask.value?.color ?: mainScreenState.emptyTask.color)
     ) {
         MyScaffold(
+            scaffoldState = mainScreenState.scaffoldState,
             screenState = mainScreenState,
             colorMap = colorMap.value ?: emptyMap(),
             taskList = taskList.value ?: emptyList(),
@@ -94,8 +99,16 @@ fun ProcessUiEvents(
 
         UiEvent.ShowNewTaskAlert -> screenState.isOpenDialog.value = true
 
-        UiEvent.NavigateToNewNote -> navController.navigate(Screens.NewNote().name){
+        UiEvent.NavigateToNewNote -> navController.navigate(Screens.NewNote().name) {
             launchSingleTop = true
+        }
+        is UiEvent.ShowSnackbar -> {
+            LaunchedEffect(uiEvent.message) {
+                screenState.scaffoldState.snackbarHostState.showSnackbar(
+                    message = uiEvent.message,
+                    duration = SnackbarDuration.Short
+                )
+            }
         }
     }
 }

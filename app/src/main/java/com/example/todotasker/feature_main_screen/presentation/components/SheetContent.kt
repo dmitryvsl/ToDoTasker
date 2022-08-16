@@ -111,9 +111,7 @@ private fun TasksNoteList(
     LazyColumn {
         items(task.notes) { note ->
             NoteItem(
-                text = note.title,
-                time = note.time,
-                isComplete = note.isComplete,
+                note = note,
                 color = Color(task.color)
             )
         }
